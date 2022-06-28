@@ -11,11 +11,13 @@
         <entry key="..\:/Android_workspace/MobileDatabase/app/src/main/res/layout/create_database.xml" value="0.27395833333333336" />
         <entry key="..\:/Android_workspace/MobileDatabase/app/src/main/res/layout/create_table.xml" value="0.259375" />
         <entry key="..\:/Android_workspace/MobileDatabase/app/src/main/res/layout/database_info.xml" value="0.259375" />
+        <entry key="..\:/Android_workspace/MobileDatabase/app/src/main/res/layout/delete_dialog.xml" value="0.27395833333333336" />
         <entry key="..\:/Android_workspace/MobileDatabase/app/src/main/res/layout/dialog.xml" value="0.25" />
         <entry key="..\:/Android_workspace/MobileDatabase/app/src/main/res/layout/item_list.xml" value="0.27395833333333336" />
         <entry key="..\:/Android_workspace/MobileDatabase/app/src/main/res/layout/list_item.xml" value="0.259375" />
         <entry key="..\:/Android_workspace/MobileDatabase/app/src/main/res/layout/main_page.xml" value="0.27395833333333336" />
         <entry key="..\:/Android_workspace/MobileDatabase/app/src/main/res/layout/new_table.xml" value="0.27395833333333336" />
+        <entry key="..\:/Android_workspace/MobileDatabase/app/src/main/res/layout/update_dialog.xml" value="0.27395833333333336" />
         <entry key="..\:/Android_workspace/MobileDatabase/app/src/main/res/layout/update_table.xml" value="0.259375" />
       </map>
     </option>

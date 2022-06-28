@@ -15,7 +15,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.beardedhen.androidbootstrap.TypefaceProvider;
 import com.example.mobiledatabase.R;
 import com.example.mobiledatabase.adapter.DatabaseAdapter;
 import com.example.mobiledatabase.utils.GetFile;
@@ -32,7 +31,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     @Override
     protected void onCreate(@NonNull Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        TypefaceProvider.registerDefaultIconSets();
         setContentView(R.layout.main_page);
         listView = this.findViewById(R.id.databaseList);
         File file = new File(filesDir);
@@ -43,17 +41,20 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             //if it is the first time using this app, the fileDir is not exist
             DBFileList = null;
         }
+        adapter = new DatabaseAdapter(this, DBFileList);
+        listView.setAdapter(adapter);
         listView.setOnItemLongClickListener(this);
         //click the .db file to the database info page
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Toast.makeText(MainActivity.this, "Welcome to " + DBFileList.get(position), Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(MainActivity.this, DatabaseInfoActivity.class));
+                //deliver the db file to the second page
+                Intent intent = new Intent(MainActivity.this, DatabaseInfoActivity.class);
+                intent.putExtra("databaseName", DBFileList.get(position));
+                startActivity(intent);
             }
         });
-        adapter = new DatabaseAdapter(this, DBFileList);
-        listView.setAdapter(adapter);
     }
     // new button
     public void createDatabase(View view) {
@@ -63,21 +64,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     @Override
     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
 
+        //delete dialog
         //create dialog builder
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         //create dialog
         AlertDialog dialog = builder.create();
-        View dialogView = View.inflate(this, R.layout.dialog, null);
+        View dialogView = View.inflate(this, R.layout.delete_dialog, null);
         TextView tv_name = dialogView.findViewById(R.id.tv_dialogName);
-        TextView tv_update = dialogView.findViewById(R.id.tv_update);
         TextView tv_delete = dialogView.findViewById(R.id.tv_delete);
-        //TODO
-        //update
-        tv_update.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            }
-        });
         //delete
         tv_delete.setOnClickListener(new View.OnClickListener() {
             @Override
