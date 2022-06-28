@@ -36,7 +36,7 @@ public class CreateDatabaseActivity extends AppCompatActivity {
         text = text + ".db";
         DBFileList = new GetFile().GetDBFileName(filesDir);
         if (text.isEmpty()) {
-            toast = Toast.makeText(this, "database name can not be null", Toast.LENGTH_SHORT);
+            toast = Toast.makeText(this, "database name can not be null !", Toast.LENGTH_SHORT);
         }else if (DBFileList.contains(text)) {
             toast = Toast.makeText(this, "database is existed !", Toast.LENGTH_SHORT);
         }else {
@@ -44,7 +44,7 @@ public class CreateDatabaseActivity extends AppCompatActivity {
             SQLiteOpenHelper helper = new MySQLiteHelper(this, text, null, 1);
             // create database file
             helper.getWritableDatabase();
-            toast = Toast.makeText(this, "database create successfully", Toast.LENGTH_SHORT);
+            toast = Toast.makeText(this, "database create successfully !", Toast.LENGTH_SHORT);
             startActivity(new Intent(this, MainActivity.class));
         }
         toast.show();
