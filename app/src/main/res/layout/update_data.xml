@@ -13,8 +13,7 @@
         android:layout_marginTop="33px"
         android:layout_marginBottom="33px"
         android:text="MobileDatabase"
-        android:textSize="20dp">
-    </TextView>
+        android:textSize="20dp"></TextView>
 
     <TextView
         android:id="@+id/textView3"
@@ -24,8 +23,7 @@
         android:layout_marginTop="33px"
         android:layout_marginBottom="33px"
         android:text="Hope you have a good experience !"
-        android:textSize="20dp">
-    </TextView>
+        android:textSize="20dp"></TextView>
 
     <TextView
         android:id="@+id/textView4"
@@ -35,52 +33,53 @@
         android:layout_marginTop="33px"
         android:layout_marginBottom="33px"
         android:text="TableName: "
-        android:textSize="20dp">
-    </TextView>
+        android:textSize="20dp"></TextView>
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        android:layout_weight="3">
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="3"
+        android:orientation="vertical">
+        <LinearLayout
+            android:id="@+id/dataTable"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="5"
+            android:orientation="horizontal"></LinearLayout>
+        <ListView
+            android:id="@+id/data"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"></ListView>
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_weight="0.5"
         android:gravity="bottom"
         android:orientation="horizontal"
-        android:paddingBottom="50px"
-        android:layout_weight="0.5">
+        android:paddingBottom="50px">
 
         <Button
             android:id="@+id/button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:layout_marginLeft="33px"
             android:layout_marginRight="33px"
-            android:text="Save"
-            android:onClick="jumpToDBInfoPage"/>
-
-        <Button
-            android:id="@+id/button3"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginLeft="33px"
-            android:layout_marginRight="33px"
-            android:text="Export" />
-
+            android:onClick="jumpToDBInfoPage"
+            android:text="Save" />
         <Button
             android:id="@+id/button4"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:layout_marginLeft="33px"
             android:layout_marginRight="33px"
-            android:text="Delete"
-            android:onClick="jumpToDBInfoPage"/>
+            android:layout_weight="1"
+            android:onClick="jumpToDBInfoPage"
+            android:text="Delete" />
     </LinearLayout>
 
 </LinearLayout>

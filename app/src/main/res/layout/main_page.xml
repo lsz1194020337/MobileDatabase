@@ -44,7 +44,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="33px"
             android:layout_marginBottom="33px"
-            android:text="DatabaseList"
+            android:text="TableList"
             android:textSize="20dp">
         </TextView>
 
@@ -70,7 +70,7 @@
             android:layout_marginLeft="33px"
             android:layout_marginRight="33px"
             android:layout_weight="1"
-            android:text="DBList" />
+            android:text="TableList" />
 
         <Button
             android:id="@+id/button6"
@@ -81,15 +81,6 @@
             android:layout_weight="1"
             android:onClick="createDatabase"
             android:text="New" />
-
-        <Button
-            android:id="@+id/button8"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="33px"
-            android:layout_marginRight="33px"
-            android:layout_weight="1"
-            android:text="Save" />
     </LinearLayout>
 
 

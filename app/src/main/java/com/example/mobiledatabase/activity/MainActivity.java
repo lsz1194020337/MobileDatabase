@@ -16,7 +16,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.mobiledatabase.R;
-import com.example.mobiledatabase.adapter.DatabaseAdapter;
+import com.example.mobiledatabase.adapter.TableAdapter;
 import com.example.mobiledatabase.utils.GetFile;
 
 import java.io.File;
@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private String filesDir = "/data/data/com.example.mobiledatabase/databases";
     private ListView listView;
     private List<String> DBFileList;
-    private DatabaseAdapter adapter;
+    private TableAdapter adapter;
 
     @Override
     protected void onCreate(@NonNull Bundle savedInstanceState) {
@@ -41,16 +41,17 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             //if it is the first time using this app, the fileDir is not exist
             DBFileList = null;
         }
-        adapter = new DatabaseAdapter(this, DBFileList);
+        adapter = new TableAdapter(this, DBFileList);
         listView.setAdapter(adapter);
         listView.setOnItemLongClickListener(this);
         //click the .db file to the database info page
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(MainActivity.this, "Welcome to " + DBFileList.get(position), Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Welcome to Table " + DBFileList.get(position).replace(".db", ""),
+                        Toast.LENGTH_SHORT).show();
                 //deliver the db file to the second page
-                Intent intent = new Intent(MainActivity.this, DatabaseInfoActivity.class);
+                Intent intent = new Intent(MainActivity.this, UpdateDataActivity.class);
                 intent.putExtra("databaseName", DBFileList.get(position));
                 startActivity(intent);
             }
@@ -58,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
     // new button
     public void createDatabase(View view) {
-        startActivity(new Intent(this, CreateDatabaseActivity.class));
+        startActivity(new Intent(this, CreateTableActivity.class));
     }
 
     @Override
@@ -101,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         //create dialog builder
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Delete");
-        builder.setMessage("Are you sure to delete this Database ? ");
+        builder.setMessage("Are you sure to delete this Table ? ");
         builder.setIcon(R.mipmap.ic_launcher);
         builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
             @Override

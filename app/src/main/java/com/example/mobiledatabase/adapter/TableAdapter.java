@@ -12,12 +12,12 @@ import com.example.mobiledatabase.R;
 
 import java.util.List;
 
-public class DatabaseAdapter extends BaseAdapter {
+public class TableAdapter extends BaseAdapter {
 
     private List<String> list;
     private LayoutInflater inflater;
 
-    public DatabaseAdapter(Context context, List<String> list) {
+    public TableAdapter(Context context, List<String> list) {
         this.list = list;
         inflater = LayoutInflater.from(context);
     }
