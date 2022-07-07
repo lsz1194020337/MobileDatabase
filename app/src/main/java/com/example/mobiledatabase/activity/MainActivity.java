@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(MainActivity.this, "Welcome to Table " + DBFileList.get(position).replace(".db", ""),
+                Toast.makeText(MainActivity.this, "Welcome to File " + DBFileList.get(position).replace(".db", ""),
                         Toast.LENGTH_SHORT).show();
                 //deliver the db file to the second page
                 Intent intent = new Intent(MainActivity.this, UpdateDataActivity.class);
@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             }
         });
     }
+
     // new button
     public void createDatabase(View view) {
         startActivity(new Intent(this, CreateTableActivity.class));
@@ -102,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         //create dialog builder
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Delete");
-        builder.setMessage("Are you sure to delete this Table ? ");
+        builder.setMessage("Are you sure to delete this Database ? ");
         builder.setIcon(R.mipmap.ic_launcher);
         builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
             @Override

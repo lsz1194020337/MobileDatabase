@@ -13,11 +13,12 @@ import com.example.mobiledatabase.R;
 import com.example.mobiledatabase.utils.GetFile;
 import com.example.mobiledatabase.utils.MySQLiteHelper;
 
+import java.io.File;
 import java.util.List;
 
 public class CreateTableActivity extends AppCompatActivity {
 
-    private EditText tableName, column1, column2, column3;
+    private EditText tableName;
     private Toast toast;
     private String filesDir = "/data/data/com.example.mobiledatabase/databases";
     private List<String> DBFileList;
@@ -30,24 +31,36 @@ public class CreateTableActivity extends AppCompatActivity {
 
     //jump back to main page after creating new database
     public void createDatabase(View view) {
-        //get the input database name
         tableName = findViewById(R.id.et_table);
-        column1 = findViewById(R.id.et_column1);
-        column2 = findViewById(R.id.et_column2);
-        column3 = findViewById(R.id.et_column3);
+        //get the input database name
         String text = tableName.getText().toString();
-        DBFileList = new GetFile().GetDBFileName(filesDir);
-        if (text.isEmpty()) {
-            toast = Toast.makeText(this, "Table name can not be null !", Toast.LENGTH_SHORT);
-        }else if (DBFileList.contains(text)) {
-            toast = Toast.makeText(this, "Table is existed !", Toast.LENGTH_SHORT);
-        }else {
-            //use the input name to create database
-            SQLiteOpenHelper helper = new MySQLiteHelper(this, text + ".db", null, 1);
-            // create database file
-            helper.getWritableDatabase();
-            toast = Toast.makeText(this, "Table create successfully !", Toast.LENGTH_SHORT);
-            startActivity(new Intent(this, MainActivity.class));
+        File file = new File(filesDir);
+        if (file.exists()) {
+            DBFileList = new GetFile().GetDBFileName(filesDir);
+            if (text.isEmpty()) {
+                toast = Toast.makeText(this, "Table name can not be null !", Toast.LENGTH_SHORT);
+            } else if (DBFileList.contains(text + ".db")) {
+                toast = Toast.makeText(this, "Table is existed !", Toast.LENGTH_SHORT);
+            } else {
+                //use the input name to create database
+                SQLiteOpenHelper helper = new MySQLiteHelper(this, text + ".db", null, 1);
+                // create database file
+                helper.getWritableDatabase();
+                toast = Toast.makeText(this, "Table create successfully !", Toast.LENGTH_SHORT);
+                startActivity(new Intent(this, MainActivity.class));
+            }
+        } else {
+            DBFileList = null;
+            if (text.isEmpty()) {
+                toast = Toast.makeText(this, "Table name can not be null !", Toast.LENGTH_SHORT);
+            } else {
+                //use the input name to create database
+                SQLiteOpenHelper helper = new MySQLiteHelper(this, text + ".db", null, 1);
+                // create database file
+                helper.getWritableDatabase();
+                toast = Toast.makeText(this, "Table create successfully !", Toast.LENGTH_SHORT);
+                startActivity(new Intent(this, MainActivity.class));
+            }
         }
         toast.show();
     }

@@ -35,24 +35,11 @@
         android:text="TableName: "
         android:textSize="20dp"></TextView>
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="3"
-        android:orientation="vertical">
-        <LinearLayout
-            android:id="@+id/dataTable"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="5"
-            android:orientation="horizontal"></LinearLayout>
-        <ListView
-            android:id="@+id/data"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical"></ListView>
-    </LinearLayout>
+    <com.bin.david.form.core.SmartTable
+        android:id="@+id/table"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"></com.bin.david.form.core.SmartTable>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -71,6 +58,7 @@
             android:layout_weight="1"
             android:onClick="jumpToDBInfoPage"
             android:text="Save" />
+
         <Button
             android:id="@+id/button4"
             android:layout_width="0dp"
