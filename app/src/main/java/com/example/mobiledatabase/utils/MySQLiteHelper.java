@@ -12,7 +12,7 @@ import com.example.mobiledatabase.bean.Table;
 import java.util.ArrayList;
 
 public class MySQLiteHelper extends SQLiteOpenHelper {
-    private String sql = "";
+    private String sql;
     private String c1, c2, c3, c4, c5, c6, c7, c8, c9, c10;
     private Context context;
 
@@ -61,7 +61,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     }
 
     public void insertData(SQLiteDatabase db){
-        sql = "insert into user(c1,c2,c3,c4,c6,c7,c8,c9) values(1,2,3,4,7,66,99,69)";
+        sql = "insert into user(c1,c2,c3,c4,c5,c6,c7,c8,c9,c10) values(null,null,null,null,null,null,null,null,null,null)";
         db.execSQL(sql);
     }
 

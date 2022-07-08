@@ -1,27 +1,26 @@
 package com.example.mobiledatabase.activity;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ListView;
 import android.widget.TextView;
-
-import androidx.appcompat.app.AppCompatActivity;
+import android.widget.Toast;
 
 import com.bin.david.form.data.style.FontStyle;
+import com.bin.david.form.data.table.TableData;
 import com.example.mobiledatabase.R;
-import com.example.mobiledatabase.adapter.DataAdapter;
 import com.example.mobiledatabase.bean.Table;
 import com.example.mobiledatabase.utils.MySQLiteHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class UpdateDataActivity extends AppCompatActivity {
+public class UpdateDataActivity extends Activity {
     private Intent intent;
     private String databaseName;
     private TextView tableName;
@@ -29,9 +28,8 @@ public class UpdateDataActivity extends AppCompatActivity {
     private SQLiteDatabase db;
     private String sql;
     private List<Table> dataList;
-    private ListView lv;
-    private DataAdapter dataAdapter;
     private com.bin.david.form.core.SmartTable table;
+    private TableData<Table> tableData;
 
     @SuppressLint("Range")
     @Override
@@ -51,13 +49,18 @@ public class UpdateDataActivity extends AppCompatActivity {
         table = findViewById(R.id.table);
         table.setData(dataList);
         table.getConfig().setContentStyle(new FontStyle(50, Color.BLUE));
-
     }
 
 
     //create or delete table
     public void jumpToDBInfoPage(View view) {
         startActivity(new Intent(this, MainActivity.class));
+    }
+
+    //add example data
+    public void addExampleData(View view){
+        addData();
+        onCreate(null);
     }
 
     // get the title
@@ -75,5 +78,12 @@ public class UpdateDataActivity extends AppCompatActivity {
             }
         }
         return titleList;
+    }
+
+    public void addData(){
+        mySQLiteHelper = new MySQLiteHelper(UpdateDataActivity.this, databaseName, null, 1);
+        db = mySQLiteHelper.getWritableDatabase();
+        mySQLiteHelper.insertData(db);
+        Toast.makeText(UpdateDataActivity.this, "Add example data successfully !", Toast.LENGTH_SHORT).show();
     }
 }

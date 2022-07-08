@@ -5,25 +5,25 @@ import com.bin.david.form.annotation.SmartTable;
 
 @SmartTable(name = "Table")
 public class Table {
-    @SmartColumn(id = 1, name = "字段1")
+    @SmartColumn(id = 1, name = "column1")
     private String column1;
-    @SmartColumn(id = 2, name = "字段2")
+    @SmartColumn(id = 2, name = "column2")
     private String column2;
-    @SmartColumn(id = 3, name = "字段3")
+    @SmartColumn(id = 3, name = "column3")
     private String column3;
-    @SmartColumn(id = 4, name = "字段4")
+    @SmartColumn(id = 4, name = "column4")
     private String column4;
-    @SmartColumn(id = 5, name = "字段5")
+    @SmartColumn(id = 5, name = "column5")
     private String column5;
-    @SmartColumn(id = 6, name = "字段6")
+    @SmartColumn(id = 6, name = "column6")
     private String column6;
-    @SmartColumn(id = 7, name = "字段7")
+    @SmartColumn(id = 7, name = "column7")
     private String column7;
-    @SmartColumn(id = 8, name = "字段8")
+    @SmartColumn(id = 8, name = "column8")
     private String column8;
-    @SmartColumn(id = 9, name = "字段9")
+    @SmartColumn(id = 9, name = "column9")
     private String column9;
-    @SmartColumn(id = 10, name = "字段10")
+    @SmartColumn(id = 10, name = "column10")
     private String column10;
     private int _id;
 
