@@ -1,89 +1,63 @@
 package com.example.mobiledatabase.activity;
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bin.david.form.data.style.FontStyle;
-import com.bin.david.form.data.table.TableData;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.mobiledatabase.R;
-import com.example.mobiledatabase.bean.Table;
 import com.example.mobiledatabase.utils.MySQLiteHelper;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class UpdateDataActivity extends Activity {
+public class UpdateDataActivity extends AppCompatActivity {
     private Intent intent;
+    private int id;
+    private String value;
+    private String columnName;
     private String databaseName;
-    private TextView tableName;
     private MySQLiteHelper mySQLiteHelper;
     private SQLiteDatabase db;
     private String sql;
-    private List<Table> dataList;
-    private com.bin.david.form.core.SmartTable table;
-    private TableData<Table> tableData;
+    private EditText etValue;
+    private TextView oldValue;
+    private Button btnUpdate;
 
-    @SuppressLint("Range")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.update_data);
 
         intent = getIntent();
+        id = intent.getIntExtra("id",0);
+        value = intent.getStringExtra("value");
+        columnName = intent.getStringExtra("colName");
         databaseName = intent.getStringExtra("databaseName");
-        tableName = findViewById(R.id.textView4);
-        tableName.setText("Table: " + databaseName.replace(".db", ""));
-
-        //display the data in a table
-        mySQLiteHelper = new MySQLiteHelper(UpdateDataActivity.this, databaseName, null, 1);
-        db = mySQLiteHelper.getWritableDatabase();
-        dataList = mySQLiteHelper.queryData(db);
-        table = findViewById(R.id.table);
-        table.setData(dataList);
-        table.getConfig().setContentStyle(new FontStyle(50, Color.BLUE));
-    }
-
-
-    //create or delete table
-    public void jumpToDBInfoPage(View view) {
-        startActivity(new Intent(this, MainActivity.class));
-    }
-
-    //add example data
-    public void addExampleData(View view){
-        addData();
-        onCreate(null);
-    }
-
-    // get the title
-    @SuppressLint("Range")
-    public ArrayList getColumnName(String databaseName) {
-        ArrayList titleList = new ArrayList();
-        mySQLiteHelper = new MySQLiteHelper(UpdateDataActivity.this, databaseName, null, 1);
-        db = mySQLiteHelper.getWritableDatabase();
-        sql = "PRAGMA TABLE_INFO ( " + databaseName + " );";
-        Cursor c = db.rawQuery(sql, null);
-        while (c.moveToNext()) {
-            String[] list = c.getColumnNames();
-            for (String o : list) {
-                titleList.add(c.getString(c.getColumnIndex("name")));
+        btnUpdate = findViewById(R.id.btn_update);
+        oldValue = findViewById(R.id.textView2);
+        oldValue.setText(value);
+        etValue = findViewById(R.id.et_value);
+        btnUpdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mySQLiteHelper = new MySQLiteHelper(UpdateDataActivity.this, databaseName, null, 1);
+                db = mySQLiteHelper.getWritableDatabase();
+                String newValue = etValue.getText().toString();
+                System.out.println("newValue: " + newValue);
+                if (newValue.isEmpty()){
+                    Toast.makeText(UpdateDataActivity.this, "Please input the data you want to modify !",Toast.LENGTH_SHORT).show();
+                }else {
+                    sql = "update user set " + columnName + " = " + "'" + newValue + "' where _id = " + id;
+                    db.execSQL(sql);
+                    Intent intent = new Intent(UpdateDataActivity.this, DisplayDataActivity.class);
+                    intent.putExtra("databaseName",databaseName);
+                    startActivity(intent);
+                }
             }
-        }
-        return titleList;
-    }
-
-    public void addData(){
-        mySQLiteHelper = new MySQLiteHelper(UpdateDataActivity.this, databaseName, null, 1);
-        db = mySQLiteHelper.getWritableDatabase();
-        mySQLiteHelper.insertData(db);
-        Toast.makeText(UpdateDataActivity.this, "Add example data successfully !", Toast.LENGTH_SHORT).show();
+        });
     }
 }

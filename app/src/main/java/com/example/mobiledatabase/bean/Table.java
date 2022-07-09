@@ -5,29 +5,32 @@ import com.bin.david.form.annotation.SmartTable;
 
 @SmartTable(name = "Table")
 public class Table {
-    @SmartColumn(id = 1, name = "column1")
-    private String column1;
-    @SmartColumn(id = 2, name = "column2")
-    private String column2;
-    @SmartColumn(id = 3, name = "column3")
-    private String column3;
-    @SmartColumn(id = 4, name = "column4")
-    private String column4;
-    @SmartColumn(id = 5, name = "column5")
-    private String column5;
-    @SmartColumn(id = 6, name = "column6")
-    private String column6;
-    @SmartColumn(id = 7, name = "column7")
-    private String column7;
-    @SmartColumn(id = 8, name = "column8")
-    private String column8;
-    @SmartColumn(id = 9, name = "column9")
-    private String column9;
-    @SmartColumn(id = 10, name = "column10")
-    private String column10;
+    @SmartColumn(id = 1, name = "id")
     private int _id;
+    @SmartColumn(id = 2, name = "c1")
+    private String column1;
+    @SmartColumn(id = 3, name = "c2")
+    private String column2;
+    @SmartColumn(id = 4, name = "c3")
+    private String column3;
+    @SmartColumn(id = 5, name = "c4")
+    private String column4;
+    @SmartColumn(id = 6, name = "c5")
+    private String column5;
+    @SmartColumn(id = 7, name = "c6")
+    private String column6;
+    @SmartColumn(id = 8, name = "c7")
+    private String column7;
+    @SmartColumn(id = 9, name = "c8")
+    private String column8;
+    @SmartColumn(id = 10, name = "c9")
+    private String column9;
+    @SmartColumn(id = 11, name = "c10")
+    private String column10;
 
-    public Table(String column1,
+
+    public Table(int id,
+                 String column1,
                  String column2,
                  String column3,
                  String column4,
@@ -38,6 +41,7 @@ public class Table {
                  String column9,
                  String column10) {
         super();
+        this._id = id;
         this.column1 = column1;
         this.column2 = column2;
         this.column3 = column3;

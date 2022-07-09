@@ -2,78 +2,63 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_weight="1"
-    android:orientation="vertical">
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginTop="33px"
-        android:layout_marginBottom="33px"
-        android:text="MobileDatabase"
-        android:textSize="20dp"></TextView>
-
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginTop="33px"
-        android:layout_marginBottom="33px"
-        android:text="Hope you have a good experience !"
-        android:textSize="20dp"></TextView>
-
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginTop="33px"
-        android:layout_marginBottom="33px"
-        android:text="TableName: "
-        android:textSize="20dp"></TextView>
+    android:orientation="vertical"
+    android:layout_gravity="center"
+    android:gravity="center">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2"
+        android:gravity="center"
+        android:layout_width="300dp"
+        android:layout_height="100dp"
         android:orientation="horizontal">
-        <com.bin.david.form.core.SmartTable
-            android:id="@+id/table"
+        <TextView
+            android:layout_weight="1"
+            android:id="@+id/textView1"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"></com.bin.david.form.core.SmartTable>
+            android:layout_height="wrap_content"
+            android:text="OldValue: "
+            android:textSize="18sp"/>
+        <TextView
+            android:layout_marginLeft="20px"
+            android:layout_weight="1"
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            android:textSize="18sp"/>
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.5"
-        android:gravity="bottom"
-        android:orientation="horizontal"
-        android:paddingBottom="50px">
-
-        <Button
-            android:id="@+id/button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="33px"
-            android:layout_marginRight="33px"
+        android:gravity="center"
+        android:layout_width="300dp"
+        android:layout_height="100dp"
+        android:orientation="horizontal">
+        <TextView
             android:layout_weight="1"
-            android:onClick="jumpToDBInfoPage"
-            android:text="Save" />
-
-        <Button
-            android:id="@+id/button4"
-            android:layout_width="0dp"
+            android:id="@+id/textView3"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="33px"
-            android:layout_marginRight="33px"
+            android:text="NewValue: "
+            android:textSize="18sp"/>
+
+        <EditText
+            android:id="@+id/et_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20px"
             android:layout_weight="1"
-            android:onClick="addExampleData"
-            android:text="Add Row" />
+            android:ems="20"
+            android:gravity="center"
+            android:hint="Please enter the value !"
+            android:maxLines="1"
+            android:minHeight="48dp"
+            android:paddingRight="20px" />
     </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_update"
+        android:layout_width="100dp"
+        android:layout_height="70dp"
+        android:text="Update"></Button>
 
 </LinearLayout>

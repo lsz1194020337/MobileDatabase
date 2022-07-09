@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 Toast.makeText(MainActivity.this, "Welcome to File " + DBFileList.get(position).replace(".db", ""),
                         Toast.LENGTH_SHORT).show();
                 //deliver the db file to the second page
-                Intent intent = new Intent(MainActivity.this, UpdateDataActivity.class);
+                Intent intent = new Intent(MainActivity.this, DisplayDataActivity.class);
                 intent.putExtra("databaseName", DBFileList.get(position));
                 startActivity(intent);
             }
