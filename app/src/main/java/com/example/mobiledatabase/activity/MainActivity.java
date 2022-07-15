@@ -120,4 +120,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         });
         builder.show();
     }
+
+    public void goToP2PPage(View view) {
+        Toast.makeText(MainActivity.this, "Welcome to P2P Data transfer page ", Toast.LENGTH_SHORT).show();
+        startActivity(new Intent(MainActivity.this, P2PMainActivity.class));
+    }
 }

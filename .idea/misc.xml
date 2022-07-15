@@ -4,10 +4,15 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Android_workspace/MobileDatabase/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.118" />
+        <entry key="..\:/Android_workspace/MobileDatabase/app/src/main/res/drawable/dialog_loading_bg.xml" value="0.1255" />
         <entry key="..\:/Android_workspace/MobileDatabase/app/src/main/res/drawable/ic_launcher_background.xml" value="0.118" />
         <entry key="..\:/Android_workspace/MobileDatabase/app/src/main/res/drawable/style.xml" value="0.118" />
         <entry key="..\:/Android_workspace/MobileDatabase/app/src/main/res/layout/activity_database.xml" value="0.27395833333333336" />
         <entry key="..\:/Android_workspace/MobileDatabase/app/src/main/res/layout/activity_main.xml" value="0.27395833333333336" />
+        <entry key="..\:/Android_workspace/MobileDatabase/app/src/main/res/layout/activity_p2_pmain.xml" value="0.27395833333333336" />
+        <entry key="..\:/Android_workspace/MobileDatabase/app/src/main/res/layout/activity_p2p_main.xml" value="0.27395833333333336" />
+        <entry key="..\:/Android_workspace/MobileDatabase/app/src/main/res/layout/activity_receive_file.xml" value="0.27395833333333336" />
+        <entry key="..\:/Android_workspace/MobileDatabase/app/src/main/res/layout/activity_send_file.xml" value="0.27395833333333336" />
         <entry key="..\:/Android_workspace/MobileDatabase/app/src/main/res/layout/activity_update_data.xml" value="0.27395833333333336" />
         <entry key="..\:/Android_workspace/MobileDatabase/app/src/main/res/layout/create_database.xml" value="0.27395833333333336" />
         <entry key="..\:/Android_workspace/MobileDatabase/app/src/main/res/layout/create_table.xml" value="0.259375" />
@@ -15,16 +20,20 @@
         <entry key="..\:/Android_workspace/MobileDatabase/app/src/main/res/layout/database_info.xml" value="0.259375" />
         <entry key="..\:/Android_workspace/MobileDatabase/app/src/main/res/layout/delete_dialog.xml" value="0.27395833333333336" />
         <entry key="..\:/Android_workspace/MobileDatabase/app/src/main/res/layout/dialog.xml" value="0.25" />
+        <entry key="..\:/Android_workspace/MobileDatabase/app/src/main/res/layout/dialog_loading.xml" value="0.27395833333333336" />
         <entry key="..\:/Android_workspace/MobileDatabase/app/src/main/res/layout/display_data.xml" value="0.27395833333333336" />
+        <entry key="..\:/Android_workspace/MobileDatabase/app/src/main/res/layout/item_device.xml" value="0.27395833333333336" />
         <entry key="..\:/Android_workspace/MobileDatabase/app/src/main/res/layout/item_list.xml" value="0.27395833333333336" />
         <entry key="..\:/Android_workspace/MobileDatabase/app/src/main/res/layout/list_data.xml" value="0.27291666666666664" />
         <entry key="..\:/Android_workspace/MobileDatabase/app/src/main/res/layout/list_item.xml" value="0.259375" />
         <entry key="..\:/Android_workspace/MobileDatabase/app/src/main/res/layout/main_page.xml" value="0.27395833333333336" />
         <entry key="..\:/Android_workspace/MobileDatabase/app/src/main/res/layout/new_table.xml" value="0.27395833333333336" />
+        <entry key="..\:/Android_workspace/MobileDatabase/app/src/main/res/layout/p2p_main.xml" value="0.27395833333333336" />
         <entry key="..\:/Android_workspace/MobileDatabase/app/src/main/res/layout/table_view_layout.xml" value="0.27395833333333336" />
         <entry key="..\:/Android_workspace/MobileDatabase/app/src/main/res/layout/update_data.xml" value="0.264" />
         <entry key="..\:/Android_workspace/MobileDatabase/app/src/main/res/layout/update_dialog.xml" value="0.27395833333333336" />
         <entry key="..\:/Android_workspace/MobileDatabase/app/src/main/res/layout/update_table.xml" value="0.259375" />
+        <entry key="..\:/Android_workspace/MobileDatabase/app/src/main/res/menu/action.xml" value="0.27395833333333336" />
       </map>
     </option>
   </component>
