@@ -11,13 +11,14 @@ import androidx.annotation.StringRes;
 
 import com.example.mobiledatabase.R;
 
+
 public class LoadingDialog extends Dialog {
 
-    private final ImageView iv_loading;
+    private ImageView iv_loading;
 
-    private final TextView tv_hint;
+    private TextView tv_hint;
 
-    private final Animation animation;
+    private Animation animation;
 
     public LoadingDialog(Context context) {
         super(context, R.style.LoadingDialogTheme);

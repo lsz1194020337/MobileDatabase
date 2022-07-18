@@ -1,21 +1,27 @@
 package com.example.mobiledatabase.model;
 
+import androidx.annotation.NonNull;
+
 import java.io.Serializable;
 
 public class FileTransfer implements Serializable {
-
-    private String fileName;
+    private String filePath;
 
     private long fileLength;
 
     private String md5;
 
-    public String getFileName() {
-        return fileName;
+    public FileTransfer(String name, long fileLength) {
+        this.filePath = name;
+        this.fileLength = fileLength;
     }
 
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
     }
 
     public long getFileLength() {
@@ -34,4 +40,13 @@ public class FileTransfer implements Serializable {
         this.md5 = md5;
     }
 
+    @NonNull
+    @Override
+    public String toString() {
+        return "FileTransfer{" +
+                "filePath='" + filePath + '\'' +
+                ", fileLength=" + fileLength +
+                ", md5='" + md5 + '\'' +
+                '}';
+    }
 }

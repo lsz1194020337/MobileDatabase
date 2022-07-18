@@ -1,13 +1,9 @@
 package com.example.mobiledatabase.activity;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.pm.PackageManager;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
@@ -16,209 +12,231 @@ import android.os.IBinder;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.core.app.ActivityCompat;
-
 import com.bumptech.glide.Glide;
 import com.example.mobiledatabase.R;
 import com.example.mobiledatabase.broadcast.DirectBroadcastReceiver;
 import com.example.mobiledatabase.callback.DirectActionListener;
 import com.example.mobiledatabase.model.FileTransfer;
-import com.example.mobiledatabase.service.WifiServerService;
+import com.example.mobiledatabase.service.ReceiveFileService;
+import com.example.mobiledatabase.utils.Logger;
 
 import java.io.File;
 import java.util.Collection;
 
+/**
+ * Start the client that receives the file
+ */
 public class ReceiveFileActivity extends BaseActivity {
 
+    private ProgressDialog progressDialog;
     private ImageView iv_image;
-
     private TextView tv_log;
 
-    private ProgressDialog progressDialog;
-
     private WifiP2pManager wifiP2pManager;
-
     private WifiP2pManager.Channel channel;
-
-    private boolean connectionInfoAvailable;
-
-    private BroadcastReceiver broadcastReceiver;
-
-    private WifiServerService wifiServerService;
-
-    private final ServiceConnection serviceConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            WifiServerService.WifiServerBinder binder = (WifiServerService.WifiServerBinder) service;
-            wifiServerService = binder.getService();
-            wifiServerService.setProgressChangListener(progressChangListener);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            if (wifiServerService != null) {
-                wifiServerService.setProgressChangListener(null);
-                wifiServerService = null;
-            }
-            bindService();
-        }
-    };
-
-    private final DirectActionListener directActionListener = new DirectActionListener() {
-        @Override
-        public void wifiP2pEnabled(boolean enabled) {
-            log("wifiP2pEnabled: " + enabled);
-        }
-
-        @Override
-        public void onConnectionInfoAvailable(WifiP2pInfo wifiP2pInfo) {
-            log("onConnectionInfoAvailable");
-            log("isGroupOwner：" + wifiP2pInfo.isGroupOwner);
-            log("groupFormed：" + wifiP2pInfo.groupFormed);
-            if (wifiP2pInfo.groupFormed && wifiP2pInfo.isGroupOwner) {
-                connectionInfoAvailable = true;
-                if (wifiServerService != null) {
-                    startService(WifiServerService.class);
-                }
-            }
-        }
-
-        @Override
-        public void onDisconnection() {
-            connectionInfoAvailable = false;
-            log("onDisconnection");
-        }
-
-        @Override
-        public void onSelfDeviceAvailable(WifiP2pDevice wifiP2pDevice) {
-            log("onSelfDeviceAvailable");
-            log(wifiP2pDevice.toString());
-        }
-
-        @Override
-        public void onPeersAvailable(Collection<WifiP2pDevice> wifiP2pDeviceList) {
-            log("onPeersAvailable,size:" + wifiP2pDeviceList.size());
-            for (WifiP2pDevice wifiP2pDevice : wifiP2pDeviceList) {
-                log(wifiP2pDevice.toString());
-            }
-        }
-
-        @Override
-        public void onChannelDisconnected() {
-            log("onChannelDisconnected");
-        }
-    };
-
-    private final WifiServerService.OnProgressChangListener progressChangListener = new WifiServerService.OnProgressChangListener() {
-        @Override
-        public void onProgressChanged(final FileTransfer fileTransfer, final int progress) {
-            runOnUiThread(() -> {
-                progressDialog.setMessage("File Name： " + fileTransfer.getFileName());
-                progressDialog.setProgress(progress);
-                progressDialog.show();
-            });
-        }
-
-        @Override
-        public void onTransferFinished(final File file) {
-            runOnUiThread(() -> {
-                progressDialog.cancel();
-                if (file != null && file.exists()) {
-                    Glide.with(ReceiveFileActivity.this).load(file.getPath()).into(iv_image);
-                }
-            });
-        }
-    };
+    private boolean connectionInfoAvailable = false;
+    private DirectBroadcastReceiver broadcastReceiver;
+    private ReceiveFileService receiveFileService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_receive_file);
         initView();
-        wifiP2pManager = (WifiP2pManager) getSystemService(WIFI_P2P_SERVICE);
-        if (wifiP2pManager == null) {
-            finish();
-            return;
-        }
-        channel = wifiP2pManager.initialize(this, getMainLooper(), directActionListener);
-        broadcastReceiver = new DirectBroadcastReceiver(wifiP2pManager, channel, directActionListener);
-        registerReceiver(broadcastReceiver, DirectBroadcastReceiver.getIntentFilter());
-        bindService();
-    }
-
-    @SuppressLint("MissingPermission")
-    private void initView() {
-        setTitle("receiving file");
-        iv_image = findViewById(R.id.iv_image);
-        tv_log = findViewById(R.id.tv_log);
-        findViewById(R.id.btnCreateGroup).setOnClickListener(v -> {
-            if (ActivityCompat.checkSelfPermission(ReceiveFileActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                return;
-            }
-            wifiP2pManager.createGroup(channel, new WifiP2pManager.ActionListener() {
-                @Override
-                public void onSuccess() {
-                    log("createGroup onSuccess");
-                    dismissLoadingDialog();
-                    showToast("onSuccess");
-                }
-
-                @Override
-                public void onFailure(int reason) {
-                    log("createGroup onFailure: " + reason);
-                    dismissLoadingDialog();
-                    showToast("onFailure");
-                }
-            });
-        });
-        findViewById(R.id.btnRemoveGroup).setOnClickListener(v -> removeGroup());
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        progressDialog.setCancelable(false);
-        progressDialog.setCanceledOnTouchOutside(false);
-        progressDialog.setTitle("Receiving the file");
-        progressDialog.setMax(100);
+        initData();
+        createGroup();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (wifiServerService != null) {
-            wifiServerService.setProgressChangListener(null);
+        if (receiveFileService != null) {
+            receiveFileService.setProgressChangListener(null);
             unbindService(serviceConnection);
         }
+        stopService(new Intent(this, ReceiveFileService.class));
         unregisterReceiver(broadcastReceiver);
-        stopService(new Intent(this, WifiServerService.class));
         if (connectionInfoAvailable) {
             removeGroup();
         }
     }
 
-    private void removeGroup() {
-        wifiP2pManager.removeGroup(channel, new WifiP2pManager.ActionListener() {
+    private void initView() {
+        setTitle("Receive File");
+        iv_image = findViewById(R.id.iv_image);
+        tv_log = findViewById(R.id.tv_log);
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog.setCancelable(false);
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.setTitle("Receiving file");
+        progressDialog.setMax(100);
+    }
+
+    private void initData() {
+        wifiP2pManager = (WifiP2pManager) getSystemService(WIFI_P2P_SERVICE);
+        if (wifiP2pManager == null) {
+            showToast("Failed to get WIFI P2P Manager, exit");
+            finish();
+            return;
+        }
+
+        // create channel
+        channel = wifiP2pManager.initialize(this, this.getMainLooper(), directActionListener);
+        broadcastReceiver = new DirectBroadcastReceiver(wifiP2pManager, channel, directActionListener);
+        registerReceiver(broadcastReceiver, DirectBroadcastReceiver.getIntentFilter());
+        bindService();
+    }
+
+    /**
+     * Actively create groups
+     * Here, in order to simplify the operation, directly designate a certain device as the server (group owner),
+     * that is, directly designate a certain device to receive files
+     * Therefore, the server must actively create a group and wait for the connection from the client
+     */
+    private void createGroup() {
+        wifiP2pManager.createGroup(channel, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
-                log("removeGroup onSuccess");
-                showToast("onSuccess");
+                printlog("createGroup successfully");
+                dismissLoadingDialog();
+                showToast("createGroup successfully");
             }
 
             @Override
             public void onFailure(int reason) {
-                log("removeGroup onFailure");
-                showToast("onFailure");
+                printlog("createGroup failed: " + reason);
+                dismissLoadingDialog();
+                showToast("createGroup failed");
             }
         });
     }
 
-    private void log(String log) {
+    /**
+     * leave group
+     */
+    private void removeGroup() {
+        wifiP2pManager.removeGroup(channel, new WifiP2pManager.ActionListener() {
+            @Override
+            public void onSuccess() {
+                printlog("removeGroup successfully");
+                showToast("removeGroup successfully");
+            }
+
+            @Override
+            public void onFailure(int reason) {
+                printlog("removeGroup failed");
+                showToast("removeGroup failed");
+            }
+        });
+    }
+
+
+    private DirectActionListener directActionListener = new DirectActionListener() {
+
+        @Override
+        public void wifiP2pEnabled(boolean enabled) {
+            Logger.d("Receive rollback: wifiP2pEnabled enabled="+enabled);
+            printlog("wifiP2pEnabled device enabled="+enabled);
+        }
+
+        @Override
+        public void onChannelDisconnected() {
+            Logger.d("Receive rollback: onChannelDisconnected");
+            printlog("onChannelDisconnected Channel disconnected");
+        }
+
+        // 注意，如果createGroup时，也会回调到这个onConnectionInfoAvailable
+        @Override
+        public void onConnectionInfoAvailable(WifiP2pInfo wifiP2pInfo) {
+            Logger.d("Receive rollback: onConnectionInfoAvailable wifiP2pInfo isGroupOwner="+wifiP2pInfo.isGroupOwner+", groupFormed="+wifiP2pInfo.groupFormed);
+            printlog("onConnectionInfoAvailable Get information about connected devices wifiP2pInfo isGroupOwner="+wifiP2pInfo.isGroupOwner+", groupFormed="+wifiP2pInfo.groupFormed);
+            if (wifiP2pInfo.groupFormed && wifiP2pInfo.isGroupOwner) {
+                connectionInfoAvailable = true;
+                if (receiveFileService != null) {
+                    startService(ReceiveFileService.class);
+                }
+            }
+        }
+
+        @Override
+        public void onDisconnection() {
+            Logger.d("Receive rollback: onDisconnection");
+            printlog("onDisconnection disconnected");
+            connectionInfoAvailable = false;
+        }
+
+        @Override
+        public void onSelfDeviceAvailable(WifiP2pDevice wifiP2pDevice) {
+            Logger.d("Receive rollback: onSelfDeviceAvailable Get the local device information wifiP2pDevice="+wifiP2pDevice);
+            printlog("onSelfDeviceAvailable Get the local device information wifiP2pDevice="+wifiP2pDevice);
+        }
+
+        @Override
+        public void onPeersAvailable(Collection<WifiP2pDevice> wifiP2pDeviceList) {
+            Logger.d("Receive rollback: onPeersAvailable wifiP2pDeviceList.size="+ (wifiP2pDeviceList == null ? 0 : wifiP2pDeviceList.size()));
+            if (wifiP2pDeviceList != null) {
+                for (WifiP2pDevice wifiP2pDevice : wifiP2pDeviceList) {
+                    Logger.d("Receive rollback: onPeersAvailable Get remote device information "+ wifiP2pDevice.toString());
+                    printlog("onPeersAvailable Get remote device information "+ wifiP2pDevice.toString());
+                }
+            }
+        }
+    };
+
+    private void printlog(String log) {
         tv_log.append(log + "\n");
         tv_log.append("----------" + "\n");
     }
 
+
     private void bindService() {
-        Intent intent = new Intent(ReceiveFileActivity.this, WifiServerService.class);
+        Intent intent = new Intent(this, ReceiveFileService.class);
         bindService(intent, serviceConnection, BIND_AUTO_CREATE);
     }
 
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            printlog("onServiceConnected binding ReceiveFileService service successfully");
+            ReceiveFileService.MyBinder binder = (ReceiveFileService.MyBinder) service;
+            receiveFileService = binder.getService();
+            receiveFileService.setProgressChangListener(progressChangListener);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            receiveFileService = null;
+            bindService(); // rebind
+        }
+    };
+
+
+    private ReceiveFileService.OnProgressChangListener progressChangListener = new ReceiveFileService.OnProgressChangListener() {
+        @Override
+        public void onProgressChanged(final FileTransfer fileTransfer, final int progress) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    progressDialog.setMessage("File Name： " + new File(fileTransfer.getFilePath()).getName());
+                    progressDialog.setProgress(progress);
+                    progressDialog.show();
+                }
+            });
+        }
+
+        @Override
+        public void onTransferFinished(final File file) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    progressDialog.cancel();
+                    if (file != null && file.exists()) {
+                        Glide.with(ReceiveFileActivity.this).load(file.getPath()).into(iv_image);
+                    }
+                }
+            });
+        }
+    };
 }

@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="10dp">
+    android:padding="6dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,7 +15,6 @@
             android:id="@+id/btn_disconnect"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
             android:layout_weight="1"
             android:text="Disconnect" />
 
@@ -23,9 +22,8 @@
             android:id="@+id/btn_chooseFile"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
             android:layout_weight="1"
-            android:text="Select File" />
+            android:text="Select the file" />
 
     </LinearLayout>
 
@@ -33,7 +31,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
-        android:text="Local device info"
+        android:text="Information about this device"
         android:textColor="@android:color/black"
         android:textSize="18sp"
         android:textStyle="bold" />
@@ -45,7 +43,7 @@
         android:layout_marginTop="6dp"
         android:textColor="@android:color/black"
         android:textSize="18sp"
-        tools:text="device name" />
+        tools:text="Mi 5X" />
 
     <TextView
         android:id="@+id/tv_myDeviceAddress"
@@ -63,7 +61,7 @@
         android:layout_marginTop="6dp"
         android:textColor="@android:color/black"
         android:textSize="18sp"
-        tools:text="enabled" />
+        tools:text="Available" />
 
     <TextView
         android:id="@+id/tv_status"
@@ -72,13 +70,13 @@
         android:layout_marginTop="6dp"
         android:textColor="@android:color/black"
         android:textSize="18sp"
-        tools:text="Connection status" />
+        tools:text="Connection Status" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:text="device list"
+        android:text="Device List"
         android:textColor="@android:color/black"
         android:textSize="18sp"
         android:textStyle="bold" />
