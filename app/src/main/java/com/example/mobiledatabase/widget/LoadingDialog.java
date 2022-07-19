@@ -14,11 +14,11 @@ import com.example.mobiledatabase.R;
 
 public class LoadingDialog extends Dialog {
 
-    private ImageView iv_loading;
+    private final ImageView iv_loading;
 
-    private TextView tv_hint;
+    private final TextView tv_hint;
 
-    private Animation animation;
+    private final Animation animation;
 
     public LoadingDialog(Context context) {
         super(context, R.style.LoadingDialogTheme);

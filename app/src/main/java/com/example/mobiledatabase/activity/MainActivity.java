@@ -24,6 +24,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemLongClickListener {
     private String filesDir = "/data/data/com.example.mobiledatabase/databases";
+    private String tempDir = "sdcard/database";
     private ListView listView;
     private List<String> DBFileList;
     private TableAdapter adapter;

@@ -1,22 +1,17 @@
 package com.example.mobiledatabase.activity;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.Service;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 
 import com.example.mobiledatabase.widget.LoadingDialog;
 
-public class BaseActivity extends AppCompatActivity {
 
-    protected final int CODE_REQ_PERMISSIONS = 665;
+public class BaseActivity extends AppCompatActivity {
 
     private LoadingDialog loadingDialog;
 
@@ -40,47 +35,16 @@ public class BaseActivity extends AppCompatActivity {
         }
     }
 
-
-    protected void showToast(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-    }
-
-    protected <T extends Activity> void startActivity(Class<T> activityClass) {
-        startActivity(new Intent(this, activityClass));
+    protected <T extends Activity> void startActivity(Class<T> tClass) {
+        startActivity(new Intent(this, tClass));
     }
 
     protected <T extends Service> void startService(Class<T> tClass) {
         startService(new Intent(this, tClass));
     }
 
-    /**
-     * request permission
-     */
-    protected void checkPermission() {
-        ActivityCompat.requestPermissions(this,
-                new String[]{Manifest.permission.CHANGE_NETWORK_STATE, Manifest.permission.ACCESS_NETWORK_STATE, Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.CHANGE_WIFI_STATE,
-                        Manifest.permission.ACCESS_FINE_LOCATION}, CODE_REQ_PERMISSIONS);
+    protected void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
-
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == CODE_REQ_PERMISSIONS) {
-            for (int i = 0; i < grantResults.length; i++) {
-                if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
-                    showToast("Lack of permission, please grant permission first");
-                    showToast(permissions[i]);
-                    return;
-                }
-            }
-            showToast("Permission granted");
-        }
-    }
-
-
-
-
 
 }
