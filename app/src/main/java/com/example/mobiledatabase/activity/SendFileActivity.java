@@ -174,7 +174,7 @@ public class SendFileActivity extends BaseActivity {
             if (id == R.id.btn_disconnect) {
                 disconnect();
             } else if (id == R.id.btn_chooseFile) {
-                navToChosePicture();
+                navToChoseFile();
             }
         };
         setTitle("Send File");
@@ -306,7 +306,7 @@ public class SendFileActivity extends BaseActivity {
         return true;
     }
 
-    private void navToChosePicture() {
+    private void navToChoseFile() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT
                 , null);
         intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "*/*");

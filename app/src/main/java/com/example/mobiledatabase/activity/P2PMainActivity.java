@@ -31,6 +31,8 @@ public class P2PMainActivity extends BaseActivity {
                 startActivity(new Intent(P2PMainActivity.this, SendFileActivity.class)));
         findViewById(R.id.btnReceiver).setOnClickListener(v ->
                 startActivity(new Intent(P2PMainActivity.this, ReceiveFileActivity.class)));
+        findViewById(R.id.btnToMain).setOnClickListener(v ->
+                startActivity(new Intent(P2PMainActivity.this, MainActivity.class)));
     }
 
     @Override

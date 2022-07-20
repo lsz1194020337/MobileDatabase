@@ -20,7 +20,6 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.Random;
 
 
 public class WifiClientTask extends AsyncTask<Object, Integer, Boolean> {
@@ -48,9 +47,11 @@ public class WifiClientTask extends AsyncTask<Object, Integer, Boolean> {
     }
 
     private String getOutputFilePath(Uri fileUri) throws Exception {
-        String outputFilePath = context.getExternalCacheDir().getAbsolutePath() +
-                File.separatorChar + new Random().nextInt(10000) +
-                new Random().nextInt(10000) + ".jpg";
+        String str = "";
+        for (int i = 0; i < 5; i++) {
+            str = str + (char) (Math.random() * 26 + 'a');
+        }
+        String outputFilePath = context.getExternalCacheDir().getAbsolutePath() + File.separator + str + ".db";
         File outputFile = new File(outputFilePath);
         if (!outputFile.exists()) {
             outputFile.getParentFile().mkdirs();

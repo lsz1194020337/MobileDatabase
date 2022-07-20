@@ -47,7 +47,6 @@ public class UpdateDataActivity extends AppCompatActivity {
                 mySQLiteHelper = new MySQLiteHelper(UpdateDataActivity.this, databaseName, null, 1);
                 db = mySQLiteHelper.getWritableDatabase();
                 String newValue = etValue.getText().toString();
-                System.out.println("newValue: " + newValue);
                 if (newValue.isEmpty()){
                     Toast.makeText(UpdateDataActivity.this, "Please input the data you want to modify !",Toast.LENGTH_SHORT).show();
                 }else {

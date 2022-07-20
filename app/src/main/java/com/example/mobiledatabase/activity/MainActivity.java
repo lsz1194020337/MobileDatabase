@@ -20,13 +20,19 @@ import com.example.mobiledatabase.adapter.TableAdapter;
 import com.example.mobiledatabase.utils.GetFile;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemLongClickListener {
-    private String filesDir = "/data/data/com.example.mobiledatabase/databases";
-    private String tempDir = "sdcard/database";
+    private String filesDir = "/data/data/com.example.mobiledatabase/databases/";
+    private String tempDir = "/storage/emulated/0/database/";
     private ListView listView;
     private List<String> DBFileList;
+    private List<String> NewFileList;
     private TableAdapter adapter;
 
     @Override
@@ -34,10 +40,46 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_page);
         listView = this.findViewById(R.id.databaseList);
-        File file = new File(filesDir);
+        File oldFile = new File(filesDir);
+        File newFile = new File(tempDir);
+        File old, move;
         //check the fileDir is exist or not
-        if (file.exists()) {
+        if (oldFile.exists()) {
+            //move db file from sdcard to app data file
+            NewFileList = new GetFile().GetDBFileName(tempDir);
+            for (String item : NewFileList) {
+                old = new File(tempDir + item);
+                move = new File(filesDir + item);
+                if (old.exists()) {
+                    FileChannel outF;
+                    try {
+                        outF = new FileOutputStream(move).getChannel();
+                        new FileInputStream(old).getChannel().transferTo(0, old.length(), outF);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            //move db file from app data file to sdcard
             DBFileList = new GetFile().GetDBFileName(filesDir);
+            newFile.mkdir();
+            for (String item : DBFileList) {
+                old = new File(filesDir + item);
+                move = new File(tempDir + item);
+                if (old.exists()) {
+                    FileChannel outF;
+                    try {
+                        outF = new FileOutputStream(move).getChannel();
+                        new FileInputStream(old).getChannel().transferTo(0, old.length(), outF);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
         } else {
             //if it is the first time using this app, the fileDir is not exist
             DBFileList = null;
@@ -64,8 +106,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         startActivity(new Intent(this, CreateTableActivity.class));
     }
 
+    public void goToP2PPage(View view) {
+        Toast.makeText(MainActivity.this, "Welcome to P2P Data transfer page ", Toast.LENGTH_SHORT).show();
+        startActivity(new Intent(MainActivity.this, P2PMainActivity.class));
+    }
+
     @Override
-    public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
+    public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position,
+                                   long id) {
 
         //delete dialog
         //create dialog builder
@@ -120,10 +168,5 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             }
         });
         builder.show();
-    }
-
-    public void goToP2PPage(View view) {
-        Toast.makeText(MainActivity.this, "Welcome to P2P Data transfer page ", Toast.LENGTH_SHORT).show();
-        startActivity(new Intent(MainActivity.this, P2PMainActivity.class));
     }
 }
