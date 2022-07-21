@@ -17,22 +17,15 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.mobiledatabase.R;
 import com.example.mobiledatabase.adapter.TableAdapter;
+import com.example.mobiledatabase.common.Constants;
 import com.example.mobiledatabase.utils.GetFile;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.channels.FileChannel;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemLongClickListener {
-    private String filesDir = "/data/data/com.example.mobiledatabase/databases/";
-    private String tempDir = "/storage/emulated/0/database/";
     private ListView listView;
     private List<String> DBFileList;
-    private List<String> NewFileList;
     private TableAdapter adapter;
 
     @Override
@@ -40,46 +33,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_page);
         listView = this.findViewById(R.id.databaseList);
-        File oldFile = new File(filesDir);
-        File newFile = new File(tempDir);
-        File old, move;
+        File oldFile = new File(Constants.APP_DATA_FILE);
         //check the fileDir is exist or not
         if (oldFile.exists()) {
-            //move db file from sdcard to app data file
-            NewFileList = new GetFile().GetDBFileName(tempDir);
-            for (String item : NewFileList) {
-                old = new File(tempDir + item);
-                move = new File(filesDir + item);
-                if (old.exists()) {
-                    FileChannel outF;
-                    try {
-                        outF = new FileOutputStream(move).getChannel();
-                        new FileInputStream(old).getChannel().transferTo(0, old.length(), outF);
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-            //move db file from app data file to sdcard
-            DBFileList = new GetFile().GetDBFileName(filesDir);
-            newFile.mkdir();
-            for (String item : DBFileList) {
-                old = new File(filesDir + item);
-                move = new File(tempDir + item);
-                if (old.exists()) {
-                    FileChannel outF;
-                    try {
-                        outF = new FileOutputStream(move).getChannel();
-                        new FileInputStream(old).getChannel().transferTo(0, old.length(), outF);
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
+            DBFileList = new GetFile().GetDBFileName(Constants.APP_DATA_FILE);
         } else {
             //if it is the first time using this app, the fileDir is not exist
             DBFileList = null;

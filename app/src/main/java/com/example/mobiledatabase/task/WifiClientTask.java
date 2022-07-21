@@ -47,11 +47,8 @@ public class WifiClientTask extends AsyncTask<Object, Integer, Boolean> {
     }
 
     private String getOutputFilePath(Uri fileUri) throws Exception {
-        String str = "";
-        for (int i = 0; i < 5; i++) {
-            str = str + (char) (Math.random() * 26 + 'a');
-        }
-        String outputFilePath = context.getExternalCacheDir().getAbsolutePath() + File.separator + str + ".db";
+        String outputFilePath = context.getExternalCacheDir().getAbsolutePath() +
+                File.separator + fileUri.toString().replace("file:///storage/emulated/0/Database/","");
         File outputFile = new File(outputFilePath);
         if (!outputFile.exists()) {
             outputFile.getParentFile().mkdirs();
@@ -74,7 +71,6 @@ public class WifiClientTask extends AsyncTask<Object, Integer, Boolean> {
 
             String outputFilePath = getOutputFilePath(imageUri);
             File outputFile = new File(outputFilePath);
-
             FileTransfer fileTransfer = new FileTransfer();
             String fileName = outputFile.getName();
             String fileMa5 = Md5Util.getMd5(outputFile);
