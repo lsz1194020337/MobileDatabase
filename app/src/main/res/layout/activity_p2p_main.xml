@@ -24,14 +24,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="12dp"
-        android:text="Send File" />
+        android:text="Send Data" />
 
     <Button
         android:id="@+id/btnReceiver"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="12dp"
-        android:text="Receive files" />
+        android:text="Receive Data" />
 
     <Button
         android:id="@+id/btnToMain"
