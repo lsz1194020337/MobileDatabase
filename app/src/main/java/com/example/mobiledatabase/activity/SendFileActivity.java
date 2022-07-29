@@ -4,14 +4,14 @@ import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.wifi.WpsInfo;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
+import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,18 +19,26 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mobiledatabase.R;
 import com.example.mobiledatabase.adapter.DeviceAdapter;
+import com.example.mobiledatabase.bean.Table;
 import com.example.mobiledatabase.broadcast.DirectBroadcastReceiver;
 import com.example.mobiledatabase.callback.DirectActionListener;
-import com.example.mobiledatabase.task.WifiClientTask;
+import com.example.mobiledatabase.common.Constants;
+import com.example.mobiledatabase.utils.MySQLiteHelper;
 import com.example.mobiledatabase.utils.WifiP2pUtils;
 import com.example.mobiledatabase.widget.LoadingDialog;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -39,8 +47,6 @@ import java.util.List;
 public class SendFileActivity extends BaseActivity {
 
     private static final String TAG = "SendFileActivity";
-
-    private static final int CODE_CHOOSE_FILE = 100;
 
     private WifiP2pManager wifiP2pManager;
 
@@ -64,13 +70,27 @@ public class SendFileActivity extends BaseActivity {
 
     private Button btn_disconnect;
 
-    private Button btn_chooseFile;
+    private Button btn_sendData;
 
     private LoadingDialog loadingDialog;
 
     private BroadcastReceiver broadcastReceiver;
 
     private WifiP2pDevice mWifiP2pDevice;
+
+    private Intent intent;
+
+    private String databaseName;
+
+    private MySQLiteHelper mySQLiteHelper;
+
+    private SQLiteDatabase db;
+
+    private List<Table> dataList;
+
+    private String sql;
+
+    private List<String> sqlList;
 
     private final DirectActionListener directActionListener = new DirectActionListener() {
 
@@ -85,7 +105,7 @@ public class SendFileActivity extends BaseActivity {
             wifiP2pDeviceList.clear();
             deviceAdapter.notifyDataSetChanged();
             btn_disconnect.setEnabled(true);
-            btn_chooseFile.setEnabled(true);
+            btn_sendData.setEnabled(true);
             Log.e(TAG, "onConnectionInfoAvailable");
             Log.e(TAG, "onConnectionInfoAvailable groupFormed: " + wifiP2pInfo.groupFormed);
             Log.e(TAG, "onConnectionInfoAvailable isGroupOwner: " + wifiP2pInfo.isGroupOwner);
@@ -114,7 +134,7 @@ public class SendFileActivity extends BaseActivity {
         public void onDisconnection() {
             Log.e(TAG, "onDisconnection");
             btn_disconnect.setEnabled(false);
-            btn_chooseFile.setEnabled(false);
+            btn_sendData.setEnabled(false);
             showToast("Disconnected");
             wifiP2pDeviceList.clear();
             deviceAdapter.notifyDataSetChanged();
@@ -149,6 +169,7 @@ public class SendFileActivity extends BaseActivity {
 
     };
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -173,8 +194,8 @@ public class SendFileActivity extends BaseActivity {
             long id = v.getId();
             if (id == R.id.btn_disconnect) {
                 disconnect();
-            } else if (id == R.id.btn_chooseFile) {
-                navToChoseFile();
+            } else if (id == R.id.btn_sendSQL) {
+                navToSendData();
             }
         };
         setTitle("Send File");
@@ -183,9 +204,9 @@ public class SendFileActivity extends BaseActivity {
         tv_myDeviceStatus = findViewById(R.id.tv_myDeviceStatus);
         tv_status = findViewById(R.id.tv_status);
         btn_disconnect = findViewById(R.id.btn_disconnect);
-        btn_chooseFile = findViewById(R.id.btn_chooseFile);
         btn_disconnect.setOnClickListener(clickListener);
-        btn_chooseFile.setOnClickListener(clickListener);
+        btn_sendData = findViewById(R.id.btn_sendSQL);
+        btn_sendData.setOnClickListener(clickListener);
         loadingDialog = new LoadingDialog(this);
         RecyclerView rv_deviceList = findViewById(R.id.rv_deviceList);
         wifiP2pDeviceList = new ArrayList<>();
@@ -203,20 +224,6 @@ public class SendFileActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(broadcastReceiver);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == CODE_CHOOSE_FILE) {
-            if (resultCode == RESULT_OK) {
-                Uri imageUri = data.getData();
-                Log.e(TAG, "File Path: " + imageUri);
-                if (wifiP2pInfo != null) {
-                    new WifiClientTask(this).execute(wifiP2pInfo.groupOwnerAddress.getHostAddress(), imageUri);
-                }
-            }
-        }
     }
 
     private void connect() {
@@ -256,7 +263,7 @@ public class SendFileActivity extends BaseActivity {
                 Log.e(TAG, "disconnect onSuccess");
                 tv_status.setText(null);
                 btn_disconnect.setEnabled(false);
-                btn_chooseFile.setEnabled(false);
+                btn_sendData.setEnabled(false);
             }
         });
     }
@@ -306,11 +313,63 @@ public class SendFileActivity extends BaseActivity {
         return true;
     }
 
-    private void navToChoseFile() {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT
-                , null);
-        intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "*/*");
-        startActivityForResult(intent, CODE_CHOOSE_FILE);
+    private void navToSendData() {
+        Socket socketSend = null;
+        OutputStream outputStream = null;
+        PrintWriter printWriter;
+        intent = getIntent();
+        databaseName = intent.getStringExtra("databaseName");
+        mySQLiteHelper = new MySQLiteHelper(SendFileActivity.this, databaseName, null, 1);
+        db = mySQLiteHelper.getWritableDatabase();
+        dataList = mySQLiteHelper.queryData(db);
+        sqlList = new ArrayList<>();
+        for (Table table : dataList) {
+            String c1 = table.getColumn1();
+            String c2 = table.getColumn2();
+            String c3 = table.getColumn3();
+            String c4 = table.getColumn4();
+            String c5 = table.getColumn5();
+            String c6 = table.getColumn6();
+            String c7 = table.getColumn7();
+            String c8 = table.getColumn8();
+            String c9 = table.getColumn9();
+            String c10 = table.getColumn10();
+            sql = "insert into user(c1,c2,c3,c4,c5,c6,c7,c8,c9,c10) values("
+                    + "'" + c1 + "'," + "'" + c2 + "'," + "'" + c3 + "'," + "'" + c4 + "'," + "'" + c5 + "',"
+                    + "'" + c6 + "'," + "'" + c7 + "'," + "'" + c8 + "'," + "'" + c9 + "'," + "'" + c10 + "');";
+            sqlList.add(sql);
+        }
+        if (wifiP2pInfo != null) {
+            try {
+                String hostAddress = wifiP2pInfo.groupOwnerAddress.getHostAddress();
+                socketSend = new Socket();
+                socketSend.bind(null);
+                socketSend.connect((new InetSocketAddress(hostAddress, Constants.PORT)), 10000);
+                for (String sql : sqlList) {
+                    outputStream = socketSend.getOutputStream();
+                    printWriter = new PrintWriter(outputStream);
+                    printWriter.write(sql + "\n");
+                    System.out.println("sql send: " + sql);
+                    printWriter.flush();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (socketSend != null && !socketSend.isClosed()) {
+                    try {
+                        socketSend.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (outputStream != null) {
+                    try {
+                        outputStream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
     }
-
 }

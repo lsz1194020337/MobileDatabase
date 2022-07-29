@@ -1,7 +1,6 @@
 package com.example.mobiledatabase.activity;
 
 import android.Manifest;
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -12,28 +11,20 @@ import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
 
-import com.bumptech.glide.Glide;
 import com.example.mobiledatabase.R;
 import com.example.mobiledatabase.broadcast.DirectBroadcastReceiver;
 import com.example.mobiledatabase.callback.DirectActionListener;
-import com.example.mobiledatabase.model.FileTransfer;
 import com.example.mobiledatabase.service.WifiServerService;
 
-import java.io.File;
 import java.util.Collection;
 
 public class ReceiveFileActivity extends BaseActivity {
 
-    private ImageView iv_image;
-
     private TextView tv_log;
-
-    private ProgressDialog progressDialog;
 
     private WifiP2pManager wifiP2pManager;
 
@@ -51,13 +42,11 @@ public class ReceiveFileActivity extends BaseActivity {
         public void onServiceConnected(ComponentName name, IBinder service) {
             WifiServerService.WifiServerBinder binder = (WifiServerService.WifiServerBinder) service;
             wifiServerService = binder.getService();
-            wifiServerService.setProgressChangListener(progressChangListener);
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
             if (wifiServerService != null) {
-                wifiServerService.setProgressChangListener(null);
                 wifiServerService = null;
             }
             bindService();
@@ -109,27 +98,6 @@ public class ReceiveFileActivity extends BaseActivity {
         }
     };
 
-    private final WifiServerService.OnProgressChangListener progressChangListener = new WifiServerService.OnProgressChangListener() {
-        @Override
-        public void onProgressChanged(final FileTransfer fileTransfer, final int progress) {
-            runOnUiThread(() -> {
-                progressDialog.setMessage("File Name: " + fileTransfer.getFileName());
-                progressDialog.setProgress(progress);
-                progressDialog.show();
-            });
-        }
-
-        @Override
-        public void onTransferFinished(final File file) {
-            runOnUiThread(() -> {
-                progressDialog.cancel();
-                if (file != null && file.exists()) {
-                    Glide.with(ReceiveFileActivity.this).load(file.getPath()).into(iv_image);
-                }
-            });
-        }
-    };
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -148,7 +116,6 @@ public class ReceiveFileActivity extends BaseActivity {
 
     private void initView() {
         setTitle("Receive File");
-        iv_image = findViewById(R.id.iv_image);
         tv_log = findViewById(R.id.tv_log);
         findViewById(R.id.btnCreateGroup).setOnClickListener(v -> {
             if (ActivityCompat.checkSelfPermission(ReceiveFileActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -171,19 +138,12 @@ public class ReceiveFileActivity extends BaseActivity {
             });
         });
         findViewById(R.id.btnRemoveGroup).setOnClickListener(v -> removeGroup());
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        progressDialog.setCancelable(false);
-        progressDialog.setCanceledOnTouchOutside(false);
-        progressDialog.setTitle("Receiving File");
-        progressDialog.setMax(100);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         if (wifiServerService != null) {
-            wifiServerService.setProgressChangListener(null);
             unbindService(serviceConnection);
         }
         unregisterReceiver(broadcastReceiver);

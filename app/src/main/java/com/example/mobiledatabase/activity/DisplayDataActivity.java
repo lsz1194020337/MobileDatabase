@@ -3,7 +3,6 @@ package com.example.mobiledatabase.activity;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -18,7 +17,6 @@ import com.example.mobiledatabase.R;
 import com.example.mobiledatabase.bean.Table;
 import com.example.mobiledatabase.utils.MySQLiteHelper;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class DisplayDataActivity extends Activity {
@@ -27,11 +25,8 @@ public class DisplayDataActivity extends Activity {
     private TextView tableName;
     private MySQLiteHelper mySQLiteHelper;
     private SQLiteDatabase db;
-    private String sql;
     private List<Table> dataList;
-    private List<String> titleList;
     private com.bin.david.form.core.SmartTable table;
-    private TableData<Table> tableData;
 
     @SuppressLint("Range")
     @Override
@@ -54,10 +49,9 @@ public class DisplayDataActivity extends Activity {
         table.getTableData().setOnItemClickListener(new TableData.OnItemClickListener() {
             @Override
             public void onClick(Column column, String value, Object o, int col, int row) {
-                row = row + 1;
                 Intent intent = new Intent(DisplayDataActivity.this, UpdateDataActivity.class);
-                intent.putExtra("colName",column.getColumnName());
-                intent.putExtra("id", row);
+                intent.putExtra("colName", column.getColumnName());
+                intent.putExtra("id", (row + 1));
                 intent.putExtra("value", value);
                 intent.putExtra("databaseName", databaseName);
                 startActivity(intent);
@@ -65,36 +59,24 @@ public class DisplayDataActivity extends Activity {
         });
     }
 
-
     //create or delete table
     public void jumpToDBInfoPage(View view) {
         startActivity(new Intent(this, MainActivity.class));
     }
 
+    public void jumpToP2pPage(View view) {
+        intent = new Intent(this, P2PMainActivity.class);
+        intent.putExtra("databaseName", databaseName);
+        startActivity(intent);
+    }
+
     //add example data
-    public void addExampleData(View view){
+    public void addExampleData(View view) {
         addData();
         onCreate(null);
     }
 
-    // get the title
-    @SuppressLint("Range")
-    public ArrayList getColumnName(String databaseName) {
-        ArrayList titleList = new ArrayList();
-        mySQLiteHelper = new MySQLiteHelper(DisplayDataActivity.this, databaseName, null, 1);
-        db = mySQLiteHelper.getWritableDatabase();
-        sql = "PRAGMA TABLE_INFO ( " + databaseName + " );";
-        Cursor c = db.rawQuery(sql, null);
-        while (c.moveToNext()) {
-            String[] list = c.getColumnNames();
-            for (String o : list) {
-                titleList.add(c.getString(c.getColumnIndex("name")));
-            }
-        }
-        return titleList;
-    }
-
-    public void addData(){
+    public void addData() {
         mySQLiteHelper = new MySQLiteHelper(DisplayDataActivity.this, databaseName, null, 1);
         db = mySQLiteHelper.getWritableDatabase();
         mySQLiteHelper.insertData(db);

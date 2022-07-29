@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -32,6 +33,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     protected void onCreate(@NonNull Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_page);
+        if (android.os.Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
         listView = this.findViewById(R.id.databaseList);
         File oldFile = new File(Constants.APP_DATA_FILE);
         //check the fileDir is exist or not
@@ -61,11 +66,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     // new button
     public void createDatabase(View view) {
         startActivity(new Intent(this, CreateTableActivity.class));
-    }
-
-    public void goToP2PPage(View view) {
-        Toast.makeText(MainActivity.this, "Welcome to P2P Data transfer page ", Toast.LENGTH_SHORT).show();
-        startActivity(new Intent(MainActivity.this, P2PMainActivity.class));
     }
 
     @Override

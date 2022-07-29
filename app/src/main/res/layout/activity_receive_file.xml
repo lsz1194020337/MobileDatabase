@@ -22,12 +22,6 @@
             android:layout_margin="20dp"
             android:text="Remove a group" />
 
-        <ImageView
-            android:id="@+id/iv_image"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/app_name" />
-
         <TextView
             android:id="@+id/tv_log"
             android:layout_width="match_parent"

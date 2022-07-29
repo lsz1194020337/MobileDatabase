@@ -74,6 +74,16 @@
             android:layout_weight="1"
             android:onClick="addExampleData"
             android:text="Add Row" />
+
+        <Button
+            android:id="@+id/btn_P2P"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="33px"
+            android:layout_marginRight="33px"
+            android:layout_weight="1"
+            android:onClick="jumpToP2pPage"
+            android:text="P2P" />
     </LinearLayout>
 
 </LinearLayout>

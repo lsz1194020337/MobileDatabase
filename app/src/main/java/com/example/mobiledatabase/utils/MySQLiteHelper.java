@@ -26,7 +26,6 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         sql = "create table user(_id integer primary key autoincrement, c1 text, c2 text, c3 text, c4 text, c5 text, c6 text, c7 text, c8 text, c9 text, c10 text)";
         db.execSQL(sql);
-        insertData(db);
     }
 
     //update database
@@ -39,7 +38,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     public ArrayList<Table> queryData(SQLiteDatabase db) {
         ArrayList<Table> dataList = new ArrayList<>();
         sql = "select * from user";
-        Cursor c = null;
+        Cursor c;
         if (db != null) {
             c = db.rawQuery(sql, null);
             while (c.moveToNext()) {

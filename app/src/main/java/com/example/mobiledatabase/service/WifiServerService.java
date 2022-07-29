@@ -2,29 +2,26 @@ package com.example.mobiledatabase.service;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Binder;
 import android.os.IBinder;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 
 import com.example.mobiledatabase.common.Constants;
-import com.example.mobiledatabase.model.FileTransfer;
-import com.example.mobiledatabase.utils.GetFile;
-import com.example.mobiledatabase.utils.Md5Util;
-import com.example.mobiledatabase.utils.MoveFile;
+import com.example.mobiledatabase.utils.MySQLiteHelper;
 
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
+import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.List;
 
-
+/**
+ * receive sql
+ */
 public class WifiServerService extends IntentService {
 
     private static final String TAG = "WifiServerService";
@@ -33,11 +30,11 @@ public class WifiServerService extends IntentService {
 
     private InputStream inputStream;
 
-    private ObjectInputStream objectInputStream;
+    private MySQLiteHelper mySQLiteHelper;
 
-    private FileOutputStream fileOutputStream;
+    private SQLiteDatabase db;
 
-    private OnProgressChangListener progressChangListener;
+    private String sql;
 
     public WifiServerService() {
         super("WifiServerService");
@@ -52,56 +49,26 @@ public class WifiServerService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         clean();
-        File file = null;
         try {
             serverSocket = new ServerSocket();
             serverSocket.setReuseAddress(true);
             serverSocket.bind(new InetSocketAddress(Constants.PORT));
             Socket client = serverSocket.accept();
-            Log.e(TAG, "Client IP address: " + client.getInetAddress().getHostAddress());
             inputStream = client.getInputStream();
-            objectInputStream = new ObjectInputStream(inputStream);
-            FileTransfer fileTransfer = (FileTransfer) objectInputStream.readObject();
-            Log.e(TAG, "Documents to be received: " + fileTransfer);
-            String name = fileTransfer.getFileName();
-            file = new File(Constants.SDCARD_DATA_FILE, name);
-            fileOutputStream = new FileOutputStream(file);
-            byte[] buf = new byte[1024];
-            int len;
-            long total = 0;
-            int progress;
-            while ((len = inputStream.read(buf)) != -1) {
-                fileOutputStream.write(buf, 0, len);
-                total += len;
-                progress = (int) ((total * 100) / fileTransfer.getFileLength());
-                Log.e(TAG, "File receiving progress: " + progress);
-                if (progressChangListener != null) {
-                    progressChangListener.onProgressChanged(fileTransfer, progress);
-                }
+            mySQLiteHelper = new MySQLiteHelper(WifiServerService.this, "share.db", null, 1);
+            db = mySQLiteHelper.getWritableDatabase();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            while ((sql = reader.readLine()) != null) {
+                System.out.println("sql receive: " +sql);
+                db.execSQL(sql);
             }
-            serverSocket.close();
             inputStream.close();
-            objectInputStream.close();
-            fileOutputStream.close();
-            serverSocket = null;
-            inputStream = null;
-            objectInputStream = null;
-            fileOutputStream = null;
-            Log.e(TAG, "The file is received successfully, and the MD5 code of the file is: " + Md5Util.getMd5(file));
-            //copy db file from sdcard to app data file
-            List<String> oldFileList = new GetFile().GetDBFileName(Constants.SDCARD_DATA_FILE);
-            for (String s : oldFileList) {
-                File old = new File(Constants.SDCARD_DATA_FILE + s);
-                File move = new File(Constants.APP_DATA_FILE + s);
-                MoveFile.moveFile(old, move);
-            }
+            serverSocket.close();
+            serverSocket.close();
         } catch (Exception e) {
-            Log.e(TAG, "File received Exception: " + e.getMessage());
+            e.printStackTrace();
         } finally {
             clean();
-            if (progressChangListener != null) {
-                progressChangListener.onTransferFinished(file);
-            }
             startService(new Intent(this, WifiServerService.class));
         }
     }
@@ -110,10 +77,6 @@ public class WifiServerService extends IntentService {
     public void onDestroy() {
         super.onDestroy();
         clean();
-    }
-
-    public void setProgressChangListener(OnProgressChangListener progressChangListener) {
-        this.progressChangListener = progressChangListener;
     }
 
     private void clean() {
@@ -133,30 +96,6 @@ public class WifiServerService extends IntentService {
                 e.printStackTrace();
             }
         }
-        if (objectInputStream != null) {
-            try {
-                objectInputStream.close();
-                objectInputStream = null;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        if (fileOutputStream != null) {
-            try {
-                fileOutputStream.close();
-                fileOutputStream = null;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public interface OnProgressChangListener {
-
-        void onProgressChanged(FileTransfer fileTransfer, int progress);
-
-        void onTransferFinished(File file);
-
     }
 
     public class WifiServerBinder extends Binder {
