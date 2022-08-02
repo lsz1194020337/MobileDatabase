@@ -16,10 +16,6 @@ public class P2PMainActivity extends BaseActivity {
 
     private static final int CODE_REQ_PERMISSIONS = 665;
 
-    private Intent intent;
-    private String databaseName;
-    private int id;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,9 +24,6 @@ public class P2PMainActivity extends BaseActivity {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
         }
-        intent = getIntent();
-        databaseName = intent.getStringExtra("databaseName");
-//        id = intent.getIntExtra("id", 0);
         findViewById(R.id.btnCheckPermission).setOnClickListener(v ->
                 ActivityCompat.requestPermissions(P2PMainActivity.this,
                         new String[]{Manifest.permission.CHANGE_NETWORK_STATE,
@@ -44,15 +37,13 @@ public class P2PMainActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(P2PMainActivity.this, SendFileActivity.class);
-                intent.putExtra("databaseName", databaseName);
-//                intent.putExtra("id", id);
                 startActivity(intent);
             }
         });
 
         findViewById(R.id.btnReceiver).setOnClickListener(v ->
                 startActivity(new Intent(P2PMainActivity.this, ReceiveFileActivity.class)));
-        findViewById(R.id.btnToMain).setOnClickListener(v ->
+        findViewById(R.id.btnToData).setOnClickListener(v ->
                 startActivity(new Intent(P2PMainActivity.this, MainActivity.class)));
     }
 

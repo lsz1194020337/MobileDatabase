@@ -5,19 +5,22 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Binder;
 import android.os.IBinder;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import com.example.mobiledatabase.bean.Database;
+import com.example.mobiledatabase.bean.DatabaseInfoList;
 import com.example.mobiledatabase.common.Constants;
 import com.example.mobiledatabase.utils.MySQLiteHelper;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.List;
 
 /**
  * receive sql
@@ -34,7 +37,7 @@ public class WifiServerService extends IntentService {
 
     private SQLiteDatabase db;
 
-    private String sql;
+    private ObjectInputStream ois;
 
     public WifiServerService() {
         super("WifiServerService");
@@ -55,16 +58,20 @@ public class WifiServerService extends IntentService {
             serverSocket.bind(new InetSocketAddress(Constants.PORT));
             Socket client = serverSocket.accept();
             inputStream = client.getInputStream();
-            mySQLiteHelper = new MySQLiteHelper(WifiServerService.this, "share.db", null, 1);
-            db = mySQLiteHelper.getWritableDatabase();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-            while ((sql = reader.readLine()) != null) {
-                System.out.println("sql receive: " +sql);
-                db.execSQL(sql);
+            ois = new ObjectInputStream(inputStream);
+            //receive the data
+            DatabaseInfoList databaseInfo = (DatabaseInfoList) ois.readObject();
+            Toast.makeText(WifiServerService.this,"Receive Data Successfully", Toast.LENGTH_SHORT).show();
+            List<Database> databaseList = databaseInfo.getDatabases();
+            for (Database database : databaseList) {
+                String databaseName = database.getDatabaseName();
+                List<String> sqlList = database.getSqlList();
+                mySQLiteHelper = new MySQLiteHelper(WifiServerService.this, databaseName, null, 1);
+                db = mySQLiteHelper.getWritableDatabase();
+                for (String sql : sqlList) {
+                    db.execSQL(sql);
+                }
             }
-            inputStream.close();
-            serverSocket.close();
-            serverSocket.close();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

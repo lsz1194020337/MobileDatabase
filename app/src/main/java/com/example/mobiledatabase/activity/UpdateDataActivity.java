@@ -26,6 +26,7 @@ public class UpdateDataActivity extends AppCompatActivity {
     private EditText etValue;
     private TextView oldValue;
     private Button btnUpdate;
+    private Button btnDelete;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,11 +34,12 @@ public class UpdateDataActivity extends AppCompatActivity {
         setContentView(R.layout.update_data);
 
         intent = getIntent();
-        id = intent.getIntExtra("id",0);
+        id = intent.getIntExtra("id", 0);
         value = intent.getStringExtra("value");
         columnName = intent.getStringExtra("colName");
         databaseName = intent.getStringExtra("databaseName");
         btnUpdate = findViewById(R.id.btn_update);
+        btnDelete = findViewById(R.id.btn_delete);
         oldValue = findViewById(R.id.textView2);
         oldValue.setText(value);
         etValue = findViewById(R.id.et_value);
@@ -47,16 +49,28 @@ public class UpdateDataActivity extends AppCompatActivity {
                 mySQLiteHelper = new MySQLiteHelper(UpdateDataActivity.this, databaseName, null, 1);
                 db = mySQLiteHelper.getWritableDatabase();
                 String newValue = etValue.getText().toString();
-                if (newValue.isEmpty()){
-                    Toast.makeText(UpdateDataActivity.this, "Please input the data you want to modify !",Toast.LENGTH_SHORT).show();
-                }else {
+                if (newValue.isEmpty()) {
+                    Toast.makeText(UpdateDataActivity.this, "Please input the data you want to modify !", Toast.LENGTH_SHORT).show();
+                } else {
                     sql = "update user set " + columnName + " = " + "'" + newValue + "' where _id = " + id;
                     db.execSQL(sql);
                     Intent intent = new Intent(UpdateDataActivity.this, DisplayDataActivity.class);
-                    intent.putExtra("databaseName",databaseName);
+                    intent.putExtra("databaseName", databaseName);
                     startActivity(intent);
                 }
             }
         });
+//        btnDelete.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                mySQLiteHelper = new MySQLiteHelper(UpdateDataActivity.this, databaseName, null, 1);
+//                db = mySQLiteHelper.getWritableDatabase();
+//                sql = "delete from user where _id =" + id + ";";
+//                db.execSQL(sql);
+//                Intent intent = new Intent(UpdateDataActivity.this, DisplayDataActivity.class);
+//                intent.putExtra("databaseName", databaseName);
+//                startActivity(intent);
+//            }
+//        });
     }
 }

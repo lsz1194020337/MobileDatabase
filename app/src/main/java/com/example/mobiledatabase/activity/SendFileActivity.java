@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
@@ -26,17 +27,21 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mobiledatabase.R;
 import com.example.mobiledatabase.adapter.DeviceAdapter;
+import com.example.mobiledatabase.bean.Database;
+import com.example.mobiledatabase.bean.DatabaseInfoList;
 import com.example.mobiledatabase.bean.Table;
 import com.example.mobiledatabase.broadcast.DirectBroadcastReceiver;
 import com.example.mobiledatabase.callback.DirectActionListener;
 import com.example.mobiledatabase.common.Constants;
+import com.example.mobiledatabase.utils.GetFile;
 import com.example.mobiledatabase.utils.MySQLiteHelper;
 import com.example.mobiledatabase.utils.WifiP2pUtils;
 import com.example.mobiledatabase.widget.LoadingDialog;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -78,19 +83,21 @@ public class SendFileActivity extends BaseActivity {
 
     private WifiP2pDevice mWifiP2pDevice;
 
-    private Intent intent;
-
-    private String databaseName;
-
-    private MySQLiteHelper mySQLiteHelper;
+    private List<String> fileList;
 
     private SQLiteDatabase db;
 
+    private MySQLiteHelper mySQLiteHelper;
+
     private List<Table> dataList;
+
+    private List<String> sqlList;
 
     private String sql;
 
-    private List<String> sqlList;
+    private List<Database> databaseList;
+
+    private DatabaseInfoList databaseInfoList;
 
     private final DirectActionListener directActionListener = new DirectActionListener() {
 
@@ -189,6 +196,10 @@ public class SendFileActivity extends BaseActivity {
         registerReceiver(broadcastReceiver, DirectBroadcastReceiver.getIntentFilter());
     }
 
+    public void toDataPage(View view) {
+        startActivity(new Intent(SendFileActivity.this, MainActivity.class));
+    }
+
     private void initView() {
         View.OnClickListener clickListener = v -> {
             long id = v.getId();
@@ -198,7 +209,7 @@ public class SendFileActivity extends BaseActivity {
                 navToSendData();
             }
         };
-        setTitle("Send File");
+        setTitle("Send Data");
         tv_myDeviceName = findViewById(R.id.tv_myDeviceName);
         tv_myDeviceAddress = findViewById(R.id.tv_myDeviceAddress);
         tv_myDeviceStatus = findViewById(R.id.tv_myDeviceStatus);
@@ -313,60 +324,78 @@ public class SendFileActivity extends BaseActivity {
         return true;
     }
 
+    private void jumpToDataPage() {
+        startActivity(new Intent(SendFileActivity.this, MainActivity.class));
+    }
+
     private void navToSendData() {
         Socket socketSend = null;
         OutputStream outputStream = null;
-        PrintWriter printWriter;
-        intent = getIntent();
-        databaseName = intent.getStringExtra("databaseName");
-        mySQLiteHelper = new MySQLiteHelper(SendFileActivity.this, databaseName, null, 1);
-        db = mySQLiteHelper.getWritableDatabase();
-        dataList = mySQLiteHelper.queryData(db);
-        sqlList = new ArrayList<>();
-        for (Table table : dataList) {
-            String c1 = table.getColumn1();
-            String c2 = table.getColumn2();
-            String c3 = table.getColumn3();
-            String c4 = table.getColumn4();
-            String c5 = table.getColumn5();
-            String c6 = table.getColumn6();
-            String c7 = table.getColumn7();
-            String c8 = table.getColumn8();
-            String c9 = table.getColumn9();
-            String c10 = table.getColumn10();
-            sql = "insert into user(c1,c2,c3,c4,c5,c6,c7,c8,c9,c10) values("
-                    + "'" + c1 + "'," + "'" + c2 + "'," + "'" + c3 + "'," + "'" + c4 + "'," + "'" + c5 + "',"
-                    + "'" + c6 + "'," + "'" + c7 + "'," + "'" + c8 + "'," + "'" + c9 + "'," + "'" + c10 + "');";
-            sqlList.add(sql);
-        }
-        if (wifiP2pInfo != null) {
-            try {
-                String hostAddress = wifiP2pInfo.groupOwnerAddress.getHostAddress();
-                socketSend = new Socket();
-                socketSend.bind(null);
-                socketSend.connect((new InetSocketAddress(hostAddress, Constants.PORT)), 10000);
-                for (String sql : sqlList) {
+        ObjectOutputStream oos;
+        File oldFile = new File(Constants.APP_DATA_FILE);
+        if (oldFile.exists()) {
+            fileList = new GetFile().GetDBFileName(Constants.APP_DATA_FILE);
+            System.out.println("fileList: " + fileList);
+            if (wifiP2pInfo != null) {
+                try {
+                    String hostAddress = wifiP2pInfo.groupOwnerAddress.getHostAddress();
+                    socketSend = new Socket();
+                    socketSend.bind(null);
+                    socketSend.connect((new InetSocketAddress(hostAddress, Constants.PORT)), 10000);
                     outputStream = socketSend.getOutputStream();
-                    printWriter = new PrintWriter(outputStream);
-                    printWriter.write(sql + "\n");
-                    System.out.println("sql send: " + sql);
-                    printWriter.flush();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                if (socketSend != null && !socketSend.isClosed()) {
-                    try {
-                        socketSend.close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    oos = new ObjectOutputStream(outputStream);
+                    databaseList = new ArrayList<>();
+                    databaseInfoList = new DatabaseInfoList();
+                    for (String databaseName : fileList) {
+                        sqlList = new ArrayList<>();
+                        mySQLiteHelper = new MySQLiteHelper(SendFileActivity.this, databaseName, null, 1);
+                        db = mySQLiteHelper.getWritableDatabase();
+                        dataList = mySQLiteHelper.queryData(db);
+                        sqlList.add("delete from user;");
+                        for (Table table : dataList) {
+                            int id = table.get_id();
+                            String c1 = table.getColumn1();
+                            String c2 = table.getColumn2();
+                            String c3 = table.getColumn3();
+                            String c4 = table.getColumn4();
+                            String c5 = table.getColumn5();
+                            String c6 = table.getColumn6();
+                            String c7 = table.getColumn7();
+                            String c8 = table.getColumn8();
+                            String c9 = table.getColumn9();
+                            String c10 = table.getColumn10();
+                            sql = "insert into user(_id,c1,c2,c3,c4,c5,c6,c7,c8,c9,c10) values("
+                                    + "'" + id + "'," + "'" + c1 + "'," + "'" + c2 + "'," + "'" + c3 + "'," + "'" + c4 + "'," + "'" + c5 + "',"
+                                    + "'" + c6 + "'," + "'" + c7 + "'," + "'" + c8 + "'," + "'" + c9 + "'," + "'" + c10 + "');";
+                            sqlList.add(sql);
+                        }
+                        Database database = new Database();
+                        database.setDatabaseName(databaseName);
+                        System.out.println("databaseName send: " + databaseName);
+                        database.setSqlList(sqlList);
+                        System.out.println("sqlList: " + sqlList);
+                        databaseList.add(database);
+                        databaseInfoList.setDatabases(databaseList);
                     }
-                }
-                if (outputStream != null) {
-                    try {
-                        outputStream.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    oos.writeObject(databaseInfoList);
+                    oos.flush();
+                    Toast.makeText(SendFileActivity.this, "Send Data Successfully", Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    System.out.println("Send Data error: " + e.getMessage());
+                } finally {
+                    if (socketSend != null && !socketSend.isClosed()) {
+                        try {
+                            socketSend.close();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    if (outputStream != null) {
+                        try {
+                            outputStream.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }

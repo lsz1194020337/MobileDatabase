@@ -115,7 +115,7 @@ public class ReceiveFileActivity extends BaseActivity {
     }
 
     private void initView() {
-        setTitle("Receive File");
+        setTitle("Receive Data");
         tv_log = findViewById(R.id.tv_log);
         findViewById(R.id.btnCreateGroup).setOnClickListener(v -> {
             if (ActivityCompat.checkSelfPermission(ReceiveFileActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -138,6 +138,7 @@ public class ReceiveFileActivity extends BaseActivity {
             });
         });
         findViewById(R.id.btnRemoveGroup).setOnClickListener(v -> removeGroup());
+        findViewById(R.id.btnToData).setOnClickListener(v -> jumpToDataPage());
     }
 
     @Override
@@ -177,6 +178,10 @@ public class ReceiveFileActivity extends BaseActivity {
     private void bindService() {
         Intent intent = new Intent(ReceiveFileActivity.this, WifiServerService.class);
         bindService(intent, serviceConnection, BIND_AUTO_CREATE);
+    }
+
+    private void jumpToDataPage() {
+        startActivity(new Intent(ReceiveFileActivity.this, MainActivity.class));
     }
 
 }

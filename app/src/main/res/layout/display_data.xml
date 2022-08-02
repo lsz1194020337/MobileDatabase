@@ -82,8 +82,8 @@
             android:layout_marginLeft="33px"
             android:layout_marginRight="33px"
             android:layout_weight="1"
-            android:onClick="jumpToP2pPage"
-            android:text="P2P" />
+            android:onClick="jumpToSendDataPage"
+            android:text="Send Data" />
     </LinearLayout>
 
 </LinearLayout>

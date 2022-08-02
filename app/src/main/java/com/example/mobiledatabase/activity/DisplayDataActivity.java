@@ -64,12 +64,10 @@ public class DisplayDataActivity extends Activity {
         startActivity(new Intent(this, MainActivity.class));
     }
 
-    public void jumpToP2pPage(View view) {
-        intent = new Intent(this, P2PMainActivity.class);
-        intent.putExtra("databaseName", databaseName);
+    public void jumpToSendDataPage(View view) {
+        intent = new Intent(this, SendFileActivity.class);
         startActivity(intent);
     }
-
     //add example data
     public void addExampleData(View view) {
         addData();

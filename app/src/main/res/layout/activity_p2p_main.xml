@@ -34,10 +34,10 @@
         android:text="Receive Data" />
 
     <Button
-        android:id="@+id/btnToMain"
+        android:id="@+id/btnToData"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="12dp"
-        android:text="To Main Page" />
+        android:text="To Database Page" />
 
 </LinearLayout>

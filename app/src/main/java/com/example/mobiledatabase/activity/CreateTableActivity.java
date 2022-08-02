@@ -1,6 +1,7 @@
 package com.example.mobiledatabase.activity;
 
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.view.View;
@@ -43,9 +44,10 @@ public class CreateTableActivity extends AppCompatActivity {
                 toast = Toast.makeText(this, "Table is existed !", Toast.LENGTH_SHORT);
             } else {
                 //use the input name to create database
-                SQLiteOpenHelper helper = new MySQLiteHelper(this, text + ".db", null, 1);
+                MySQLiteHelper helper = new MySQLiteHelper(this, text + ".db", null, 1);
                 // create database file
-                helper.getWritableDatabase();
+                SQLiteDatabase db = helper.getWritableDatabase();
+                helper.insertData(db);
                 toast = Toast.makeText(this, "Table create successfully !", Toast.LENGTH_SHORT);
                 startActivity(new Intent(this, MainActivity.class));
             }
