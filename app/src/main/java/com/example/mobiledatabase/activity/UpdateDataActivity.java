@@ -26,7 +26,6 @@ public class UpdateDataActivity extends AppCompatActivity {
     private EditText etValue;
     private TextView oldValue;
     private Button btnUpdate;
-    private Button btnDelete;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +38,6 @@ public class UpdateDataActivity extends AppCompatActivity {
         columnName = intent.getStringExtra("colName");
         databaseName = intent.getStringExtra("databaseName");
         btnUpdate = findViewById(R.id.btn_update);
-        btnDelete = findViewById(R.id.btn_delete);
         oldValue = findViewById(R.id.textView2);
         oldValue.setText(value);
         etValue = findViewById(R.id.et_value);
@@ -60,17 +58,5 @@ public class UpdateDataActivity extends AppCompatActivity {
                 }
             }
         });
-//        btnDelete.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                mySQLiteHelper = new MySQLiteHelper(UpdateDataActivity.this, databaseName, null, 1);
-//                db = mySQLiteHelper.getWritableDatabase();
-//                sql = "delete from user where _id =" + id + ";";
-//                db.execSQL(sql);
-//                Intent intent = new Intent(UpdateDataActivity.this, DisplayDataActivity.class);
-//                intent.putExtra("databaseName", databaseName);
-//                startActivity(intent);
-//            }
-//        });
     }
 }

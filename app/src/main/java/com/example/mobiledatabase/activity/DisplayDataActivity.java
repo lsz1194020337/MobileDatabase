@@ -74,6 +74,14 @@ public class DisplayDataActivity extends Activity {
         onCreate(null);
     }
 
+    public void deleteTheLastRow(View view){
+        mySQLiteHelper = new MySQLiteHelper(DisplayDataActivity.this, databaseName, null, 1);
+        db = mySQLiteHelper.getWritableDatabase();
+        String sql = "delete from user where _id = (select max(_id) from user);";
+        db.execSQL(sql);
+        onCreate(null);
+    }
+
     public void addData() {
         mySQLiteHelper = new MySQLiteHelper(DisplayDataActivity.this, databaseName, null, 1);
         db = mySQLiteHelper.getWritableDatabase();

@@ -32,7 +32,7 @@
         android:layout_gravity="center_vertical"
         android:layout_marginTop="33px"
         android:layout_marginBottom="33px"
-        android:text="TableName: "
+        android:text="Database Name: "
         android:textSize="20dp"></TextView>
 
     <LinearLayout
@@ -74,6 +74,16 @@
             android:layout_weight="1"
             android:onClick="addExampleData"
             android:text="Add Row" />
+
+        <Button
+            android:id="@+id/btn_delete"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="33px"
+            android:layout_marginRight="33px"
+            android:layout_weight="1"
+            android:onClick="deleteTheLastRow"
+            android:text="Delete Last Row" />
 
         <Button
             android:id="@+id/btn_P2P"

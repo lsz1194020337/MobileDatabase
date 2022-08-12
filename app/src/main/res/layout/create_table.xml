@@ -43,7 +43,7 @@
             android:layout_weight="1"
             android:gravity="left"
             android:paddingLeft="20px"
-            android:text="TableName :"
+            android:text="Database Name :"
             android:textSize="20dp" />
 
         <EditText
@@ -54,7 +54,7 @@
             android:layout_weight="1"
             android:ems="20"
             android:gravity="center"
-            android:hint="Please enter the table name !"
+            android:hint="Please enter the Database name !"
             android:maxLines="1"
             android:minHeight="48dp"
             android:paddingRight="20px" />
