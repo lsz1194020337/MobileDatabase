@@ -81,6 +81,16 @@
             android:layout_weight="1"
             android:onClick="createDatabase"
             android:text="New" />
+
+        <Button
+            android:id="@+id/btn_p2p"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="33px"
+            android:layout_marginRight="33px"
+            android:layout_weight="1"
+            android:onClick="toP2PPage"
+            android:text="P2P" />
     </LinearLayout>
 
 

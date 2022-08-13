@@ -68,6 +68,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         startActivity(new Intent(this, CreateTableActivity.class));
     }
 
+    public void toP2PPage(View view) {
+        startActivity(new Intent(this, P2PMainActivity.class));
+    }
+
     @Override
     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position,
                                    long id) {
